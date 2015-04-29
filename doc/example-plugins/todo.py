@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+from __future__ import print_function
 import os
 import pickle
 
@@ -16,7 +18,7 @@ def process_message(data):
     text = data["text"]
     #only accept tasks on DM channels
     if channel.startswith("D"):
-        if channel not in tasks.keys():
+        if channel not in list(tasks.keys()):
             tasks[channel] = []
         #do command stuff
         if text.startswith("todo"):
@@ -35,5 +37,5 @@ def process_message(data):
             num = int(text.split()[1]) - 1
             tasks[channel].pop(num)
         if text == "show":
-            print tasks
+            print(tasks)
         pickle.dump(tasks, open(FILE,"wb"))
