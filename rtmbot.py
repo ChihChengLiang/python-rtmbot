@@ -1,13 +1,10 @@
-
 #!/usr/bin/env python
-
-from __future__ import absolute_import
+# -*- coding: utf-8 -*-
 import sys
 sys.dont_write_bytecode = True
 
 import glob
 import yaml
-import json
 import os
 import sys
 import time
@@ -65,11 +62,11 @@ class RtmBot(object):
             limiter = False
             for output in plugin.do_output():
                 channel = self.slack_client.server.channels.find(output[0])
-                if channel != None and output[1] != None:
-                    if limiter == True:
+                if channel and output[1]:
+                    if limiter:
                         time.sleep(.1)
                         limiter = False
-                    message = output[1].encode('utf8')
+                    message = output[1]
                     channel.send_message("{}".format(message))
                     limiter = True
 
@@ -81,7 +78,8 @@ class RtmBot(object):
         for plugin in glob.glob(directory + '/plugins/*'):
             sys.path.insert(0, plugin)
             sys.path.insert(0, directory + '/plugins/')
-        for plugin in glob.glob(directory + '/plugins/*.py') + glob.glob(directory + '/plugins/*/*.py'):
+        for plugin in glob.glob(directory + '/plugins/*.py') + \
+                glob.glob(directory + '/plugins/*/*.py'):
             logging.info(plugin)
             name = plugin.split('/')[-1][:-3]
 #            try:
@@ -181,7 +179,9 @@ class UnknownChannel(Exception):
 def main_loop():
     if "LOGFILE" in config:
         logging.basicConfig(
-            filename=config["LOGFILE"], level=logging.INFO, format='%(asctime)s %(message)s')
+            filename=config["LOGFILE"],
+            level=logging.INFO,
+            format='%(asctime)s %(message)s')
     logging.info(directory)
     try:
         bot.start()
@@ -207,10 +207,6 @@ if __name__ == "__main__":
     if "DAEMON" in config:
         if config["DAEMON"]:
             import daemon
-            with daemon.DaemonContext():
-                main_loop()
-    main_loop()
-        import daemon
             with daemon.DaemonContext():
                 main_loop()
     main_loop()
